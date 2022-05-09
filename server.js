@@ -2,12 +2,14 @@ import express from "express";
 import env from "dotenv";
 import loginRoutes from "./src/Router/loginRoutes.js";
 import { apiLogger, logger, errorLogger } from "./src/Utility/Logger.js";
+import cors from "cors";
 env.config();
 
 // eslint-disable-next-line no-undef
 const { PORT, NODE_ENV } = process.env;
 const app = express();
 
+app.use(cors("*"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use((err, req, res, next) => errorLogger(err, req, res, next));
