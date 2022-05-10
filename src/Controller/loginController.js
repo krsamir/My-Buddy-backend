@@ -1,10 +1,10 @@
 import axios from "axios";
 const loginController = {};
-import database from "../Database/database.js";
+// import database from "../Database/database.js";
 
 loginController.getGithubAccessToken = async (req, res) => {
   try {
-    const code = req.body.code;
+    const code = req.query.code;
     const params = new URLSearchParams();
     // eslint-disable-next-line no-undef
     params.append("client_id", process.env.GITHUBCLIENTID);
@@ -19,23 +19,32 @@ loginController.getGithubAccessToken = async (req, res) => {
         headers: { Accept: "application/json" },
       })
       .then((response) => {
-        res.send({
-          status: 1,
-          data: response.data.access_token,
-          message: "Login Success!!",
-        });
+        res.cookie("access_token", response.data.access_token);
+        if (response.data.access_token) {
+          res.send({
+            status: 1,
+            data: response.data.access_token,
+            message: "Login Success!!",
+          });
+        } else {
+          res.send({
+            status: 0,
+            error: response.data.error,
+            message: "Some Issue while logging in.",
+          });
+        }
       })
       .catch((error) => {
         res.send({
           status: 0,
-          data: error.code,
-          essage: "Some Issue while logging in.",
+          error: error.code,
+          message: "Some Issue while logging in.",
         });
       });
   } catch (error) {
     res.send({
       status: 0,
-      data: error.code,
+      error: error.code,
       message: "Some Issue while logging in.",
     });
   }
