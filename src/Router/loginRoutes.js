@@ -3,5 +3,5 @@ import loginController from "../Controller/loginController.js";
 const router = express.Router();
 
 router.get("/github/accesstoken", loginController.getGithubAccessToken);
-router.post("/bitbucket/accestoken", loginController.bitBucketAccessToken);
+router.post("/jira/accestoken", loginController.jiraAccessToken);
 export default router;
