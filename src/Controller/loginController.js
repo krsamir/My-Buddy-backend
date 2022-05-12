@@ -6,7 +6,7 @@ config();
 const { BITBUCKET_REDIRECT_URI, BITBUCKET_CLIENT_ID, BITBUCKET_CLIENT_SECRET } =
   // eslint-disable-next-line no-undef
   process.env;
-loginController.getGithubAccessToken = async (req, res) => {
+loginController.getGithubAccessToken = async (req, res, next) => {
   try {
     const code = req.query.code;
     const params = new URLSearchParams();
@@ -27,30 +27,17 @@ loginController.getGithubAccessToken = async (req, res) => {
         if (response.data.access_token) {
           res.send({
             status: 1,
-            data: response.data.access_token,
             message: "Login Success!!",
           });
         } else {
-          res.send({
-            status: 0,
-            error: response.data.error,
-            message: "Some Issue while logging in.",
-          });
+          next();
         }
       })
       .catch((error) => {
-        res.send({
-          status: 0,
-          error: error.code,
-          message: "Some Issue while logging in.",
-        });
+        next(error);
       });
   } catch (error) {
-    res.send({
-      status: 0,
-      error: error.code,
-      message: "Some Issue while logging in.",
-    });
+    next(error);
   }
 };
 
