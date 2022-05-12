@@ -2,7 +2,7 @@ import axios from "axios";
 const loginController = {};
 // import database from "../Database/database.js";
 
-loginController.getGithubAccessToken = async (req, res) => {
+loginController.getGithubAccessToken = async (req, res, next) => {
   try {
     const code = req.query.code;
     const params = new URLSearchParams();
@@ -23,30 +23,17 @@ loginController.getGithubAccessToken = async (req, res) => {
         if (response.data.access_token) {
           res.send({
             status: 1,
-            data: response.data.access_token,
             message: "Login Success!!",
           });
         } else {
-          res.send({
-            status: 0,
-            error: response.data.error,
-            message: "Some Issue while logging in.",
-          });
+          next();
         }
       })
       .catch((error) => {
-        res.send({
-          status: 0,
-          error: error.code,
-          message: "Some Issue while logging in.",
-        });
+        next(error);
       });
   } catch (error) {
-    res.send({
-      status: 0,
-      error: error.code,
-      message: "Some Issue while logging in.",
-    });
+    next(error);
   }
 };
 
