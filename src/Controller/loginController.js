@@ -1,7 +1,11 @@
 import axios from "axios";
+import { config } from "dotenv";
 const loginController = {};
-// import database from "../Database/database.js";
+config();
 
+const { BITBUCKET_REDIRECT_URI, BITBUCKET_CLIENT_ID, BITBUCKET_CLIENT_SECRET } =
+  // eslint-disable-next-line no-undef
+  process.env;
 loginController.getGithubAccessToken = async (req, res, next) => {
   try {
     const code = req.query.code;
@@ -37,4 +41,26 @@ loginController.getGithubAccessToken = async (req, res, next) => {
   }
 };
 
+loginController.bitBucketAccessToken = async (req, res, next) => {
+  const { code } = req.body;
+  await axios({
+    method: "POST",
+    url: "https://auth.atlassian.com/oauth/token",
+    headers: { "Content-Type": "application/json" },
+    data: {
+      grant_type: "authorization_code",
+      client_id: BITBUCKET_CLIENT_ID,
+      client_secret: BITBUCKET_CLIENT_SECRET,
+      code,
+      redirect_uri: BITBUCKET_REDIRECT_URI,
+    },
+  })
+    .then((response) => {
+      res.cookie("access_token", response.data.access_token);
+      res.send({ status: 1 });
+    })
+    .catch((e) => {
+      next(e);
+    });
+};
 export default loginController;
