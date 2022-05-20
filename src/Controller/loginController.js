@@ -3,7 +3,7 @@ import { config } from "dotenv";
 const loginController = {};
 config();
 
-const { BITBUCKET_REDIRECT_URI, BITBUCKET_CLIENT_ID, BITBUCKET_CLIENT_SECRET } =
+const { JIRA_REDIRECT_URI, JIRA_CLIENT_ID, JIRA_CLIENT_SECRET } =
   // eslint-disable-next-line no-undef
   process.env;
 loginController.getGithubAccessToken = async (req, res, next) => {
@@ -41,7 +41,7 @@ loginController.getGithubAccessToken = async (req, res, next) => {
   }
 };
 
-loginController.bitBucketAccessToken = async (req, res, next) => {
+loginController.jiraAccessToken = async (req, res, next) => {
   const { code } = req.body;
   await axios({
     method: "POST",
@@ -49,10 +49,10 @@ loginController.bitBucketAccessToken = async (req, res, next) => {
     headers: { "Content-Type": "application/json" },
     data: {
       grant_type: "authorization_code",
-      client_id: BITBUCKET_CLIENT_ID,
-      client_secret: BITBUCKET_CLIENT_SECRET,
+      client_id: JIRA_CLIENT_ID,
+      client_secret: JIRA_CLIENT_SECRET,
       code,
-      redirect_uri: BITBUCKET_REDIRECT_URI,
+      redirect_uri: JIRA_REDIRECT_URI,
     },
   })
     .then((response) => {
