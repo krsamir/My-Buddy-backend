@@ -25,9 +25,10 @@ export const apiLogger = (req, res, next) => {
       )
     );
   }
-  NODE_ENV === "development" &&
-    method !== "GET" &&
-    log(yellowBackGround("PAYLOAD: ", body));
+  if (NODE_ENV === "development" && method !== "GET") {
+    log(yellowBackGround(`Payload:`));
+    log(body);
+  }
   next();
 };
 
