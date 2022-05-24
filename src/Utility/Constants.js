@@ -1,3 +1,9 @@
-export const REGISTER = "REGISTER";
-export const SUCCESS = "SUCCESS";
-export const FAILED = "FAILED";
+export const AppConstant = Object.freeze({
+  FUNCTIONS: {
+    REGISTER: "REGISTER",
+  },
+  STATUS: {
+    SUCCESS: "SUCCESS",
+    FAILED: "FAILED",
+  },
+});
