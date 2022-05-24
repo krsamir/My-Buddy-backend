@@ -15,6 +15,14 @@ yargs.command({
   },
 });
 
+yargs.command({
+  command: "2",
+  describe: "2. Create Email Table",
+  handler(argv) {
+    Task.addEmailLogTable();
+  },
+});
+
 // yargs.command({
 //     command: "addadmin",
 //     describe: "Create Admin Table",
