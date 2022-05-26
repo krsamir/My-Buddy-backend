@@ -7,8 +7,11 @@ import sequelize from "../Database/database.js";
 import User from "../Model/User.js";
 import Sequelize from "sequelize";
 import Email from "../Email/email.js";
-const loginController = {};
+import jwt from "jsonwebtoken";
 
+const loginController = {};
+// eslint-disable-next-line no-undef
+const { JWT_SECRET, JWT_EXPIRATION_TIME } = process.env;
 config();
 
 const { JIRA_REDIRECT_URI, JIRA_CLIENT_ID, JIRA_CLIENT_SECRET } =
@@ -81,6 +84,47 @@ loginController.register = async (req, res) => {
         reason: error,
       });
     }
+  }
+};
+
+loginController.verification = async (req, res) => {
+  const { email, token } = req.body;
+  try {
+    const user = await User.findOne({
+      where: { email: email, token },
+      attributes: ["validTill", "email", "id"],
+    });
+    if (user) {
+      const data = user.toJSON();
+      const expiry = moment(data.validTill);
+      if (moment().isSameOrBefore(moment(expiry))) {
+        await User.update(
+          { isActive: true, token: null },
+          {
+            where: { email: email, token },
+          }
+        );
+        const jwtToken = jwt.sign(
+          { id: data.id, email: data.email },
+          JWT_SECRET,
+          {
+            expiresIn: JWT_EXPIRATION_TIME,
+          }
+        );
+        res.send({
+          status: 1,
+          message: "accepted",
+          token: jwtToken,
+        });
+      } else {
+        res.send({ status: 0, message: "Token expired !!" });
+      }
+    } else {
+      res.send({ status: 0, message: "Invalid Request!" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.send({ status: 0, message: "Some issue with the request." });
   }
 };
 
